@@ -24,7 +24,7 @@ public class Controller : MonoBehaviour {
 		screenMat.mainTexture = output;
 
 		//Load the game into the memory
-		chip.loadGame ("Assets/games/MAZE");
+		chip.loadGame ("Assets/games/PONG");
 
 		//Launch emulation loop
 		emulating = true;
@@ -49,36 +49,40 @@ public class Controller : MonoBehaviour {
 		chip.key [14] = Input.GetKey (KeyCode.F) ? (byte)1 : (byte)0;
 		chip.key [15] = Input.GetKey (KeyCode.V) ? (byte)1 : (byte)0;
 		debugStepPressed = Input.GetKeyDown (KeyCode.Space);
+
+
 		if (Input.GetKey (KeyCode.Escape)) {
 			emulating = false;
 		}
-	}
+
+
+        if (emulating) {
+            if (chip.DEBUG) {
+                countdown = 100;
+            }
+            if (countdown <= 0 || (chip.DEBUG && debugStepPressed)) {
+                debugStepPressed = false;
+                countdown = 1 / FREQ;
+                //Emulate one cycle
+                chip.emulateCycle();
+
+                //If the draw flag is set, update the screen
+                if (chip.drawFlag) {
+                    //Update screen
+                    for (int i = 0; i < 64; i++) {
+                        for (int j = 0; j < 32; j++) {
+                            output.SetPixel(i, 31 - j, (chip.gfx[i + j * 64]) ? Color.green : Color.black);
+                        }
+                    }
+                    output.Apply();
+                    chip.drawFlag = false;
+                }
+            } else {
+                countdown -= Time.deltaTime;
+            }
+        }
+    }
 
 	void FixedUpdate(){
-		if (emulating) {
-			if (chip.DEBUG) {
-				countdown = 100;
-			}
-			if (countdown <= 0 || (chip.DEBUG && debugStepPressed)) {
-				debugStepPressed = false;
-				countdown = 1/FREQ;
-				//Emulate one cycle
-				chip.emulateCycle ();
-
-				//If the draw flag is set, update the screen
-				if (chip.drawFlag) {
-					//Update screen
-					for (int i = 0; i < 64; i++) {
-						for (int j = 0; j < 32; j++) {
-							output.SetPixel (i, 31-j, (chip.gfx [i + j * 64]) ? Color.green : Color.black);
-						}
-					}
-					output.Apply ();
-					chip.drawFlag = false;
-				}
-			} else {
-				countdown -= Time.fixedDeltaTime;
-			}
-		}
 	}
 }
