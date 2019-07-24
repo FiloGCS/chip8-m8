@@ -104,13 +104,13 @@ public class Chip8 : MonoBehaviour{
 			}
 			break;
 		case 0x1000: //1NNN Jumps to adress NNN
-			if(DEBUG)print("1NNN: Jump to address NNN");
 			pc = (ushort)(opcode & 0x0FFF);
+			if(DEBUG)print("1NNN: Jump to address " + pc.ToString("X"));
 			break;
 
 		case 0x2000: //2NNN Calls subroutine at NNN
-			stack [sp] = pc;
 			if(DEBUG)print("2NNN: Call subroutine at NNN from pc = " + pc + " (sp=" + sp);
+			stack[sp] = pc;
 			sp++;
 			pc = (ushort)(opcode & 0x0FFF);
 			break;
@@ -290,13 +290,15 @@ public class Chip8 : MonoBehaviour{
 					if((row & (0x80 >> x))!=0){
 						//BUG!
 						int screenPos = xPos + x + (yPos + y) * 64;
-						if (gfx [screenPos]) {
-							v [0xF] = 1;
-							gfx [screenPos] = false;
-						} else {
-							v [0xF] = 0;
-							gfx [screenPos] = true;
-						}
+                        if (screenPos < gfx.Length) {
+                            if (gfx[screenPos]) {
+                                v[0xF] = 1;
+                                gfx[screenPos] = false;
+                            } else {
+                                v[0xF] = 0;
+                                gfx[screenPos] = true;
+                            }
+                        }
 					}
 				}
 			}

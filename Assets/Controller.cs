@@ -6,7 +6,7 @@ public class Controller : MonoBehaviour {
 	public Chip8 chip;
 	public Material screenMat;
 	public Texture2D output;
-	public float FREQ = 25;
+	public float FREQ = 30;
 
 	private bool emulating = false;
 	private float countdown = 0;
@@ -24,7 +24,7 @@ public class Controller : MonoBehaviour {
 		screenMat.mainTexture = output;
 
 		//Load the game into the memory
-		chip.loadGame ("Assets/games/PONG");
+		chip.loadGame ("Assets/games/MAZE");
 
 		//Launch emulation loop
 		emulating = true;
